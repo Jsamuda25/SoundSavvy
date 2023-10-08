@@ -47,15 +47,59 @@ def get_playlist_user(token, user_id):
     
     return result
 
+# returns a dictionary of genres and their frequency given a list of artist ids
+def get_genres_from_artists(token, artists: list[str]) -> dict[str, int]:
+    genres = {}
+    
+    for artist in artists:
+        url = "https://api.spotify.com/v1/artists/" + artist
+        headers = get_auth_header(token)
+        response = requests.get(url, headers=headers)
+        result = json.loads(response.content)
+        result = result["genres"]
+        for genre in result:
+            genres[genre] = genres.get(genre, 0) + 1
+        
+    # return the genres sorted by frequency
+    return dict(sorted(genres.items(), key=lambda x: x[1], reverse=True))
+        
 
+#returns json of playlist
 def get_playlist(token, playlist_id):
     url = "https://api.spotify.com/v1/playlists/" + playlist_id + "/tracks"
     headers = get_auth_header(token)
     response = requests.get(url, headers=headers)
     result = json.dumps(json.loads(response.content))
+    return result
+
+# returns array of artists within playlist
+def get_artists_from_playlist(json_playlist):
+    artists = []
+    playlist = json.loads(json_playlist)
+    for item in playlist["items"]:
+        artists.append(item["track"]["artists"][0]["id"])
     
+    # returns artist ids
+    return artists
+    
+def recommend_songs(token, genres:dict, artists:list[str], num_songs: int):
+    url = "https://api.spotify.com/v1/recommendations"
+    headers = get_auth_header(token)
+    params = {
+        "limit": num_songs,
+        "seed_artists": artists,
+        "seed_genres": (list(genres.keys()))[:5],
+    }
+    response = requests.get(url, headers=headers, params=params)
+    result = json.dumps(json.loads(response.content))
     return result
     
 
 token = get_token()
-print(get_playlist(token, "3gW3MRRNkjlnbrwC8LVE9H"))
+map = get_playlist(token, "3gW3MRRNkjlnbrwC8LVE9H")
+genres = get_genres_from_artists(token, get_artists_from_playlist(map))
+artists = get_artists_from_playlist(map)
+print("Artists:", get_artists_from_playlist(map))
+print(" ")
+print("Recommended Songs: " + "\n")
+print(recommend_songs(token, genres, artists, 10))
