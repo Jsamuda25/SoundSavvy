@@ -5,7 +5,20 @@ import base64
 import requests
 import json
 
+import openai
+
 load_dotenv()
+
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
+response = openai.Completion.create(
+  engine="text-davinci-003",
+  prompt="What dinosaurs lived in the cretaceous period?",
+  max_tokens=10
+)
+
+print(response.choices[0].text.strip())
+
 
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
@@ -94,12 +107,28 @@ def recommend_songs(token, genres:dict, artists:list[str], num_songs: int):
     result = json.dumps(json.loads(response.content))
     return result
     
+def getValuesFromSongs(json_songs):
+    tracks = json.loads(json_songs)
 
-token = get_token()
-map = get_playlist(token, "3gW3MRRNkjlnbrwC8LVE9H")
-genres = get_genres_from_artists(token, get_artists_from_playlist(map))
-artists = get_artists_from_playlist(map)
-print("Artists:", get_artists_from_playlist(map))
-print(" ")
-print("Recommended Songs: " + "\n")
-print(recommend_songs(token, genres, artists, 10))
+    track = {}
+    songs = []
+    for item in tracks["tracks"]:
+        track["song"] =   item["name"]
+        track["artist"] = item["artists"][0]["name"]
+        track["album"] =  item["album"]["name"]
+        track["image"] =  item["album"]["images"][0]["url"]
+        songs.append(track)
+        track = {}
+
+    return songs
+
+# token = get_token()
+# map = get_playlist(token, "3gW3MRRNkjlnbrwC8LVE9H")
+# genres = get_genres_from_artists(token, get_artists_from_playlist(map))
+# artists = get_artists_from_playlist(map)
+# print("Artists:", get_artists_from_playlist(map))
+# print(" ")
+# # print("Recommended Songs: " + "\n")
+# songs = recommend_songs(token, genres, artists, 10)
+# # print(songs)
+# print(getValuesFromSongs(songs))
