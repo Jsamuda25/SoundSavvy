@@ -1,23 +1,21 @@
 import React,{ useState, useEffect } from 'react'
 
 function App() {
-  const [data, setData] = useState([{}]);
+  const [data, setData] = useState({});
 
   useEffect(() => {
-    fetch("/").then(
-      res => res.json()
-    ).then(
-      data => {
-        setData(data)
-        console.log("Failed expo")
-        console.log(data)
-      }
-    )
-  }, [])
+    fetch("http://localhost:5000/")
+    .then(
+      response => response.json())
+    .then(json => {
+      setData(json)
+      console.log(data)
+    })
+  }, {})
     
   return (
     <h1>
-
+      {data.message}
     </h1>
   )
 }
