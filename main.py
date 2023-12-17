@@ -5,27 +5,27 @@ import base64
 import requests
 import json
 
-import openai
+# import openai
 
 load_dotenv()
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# openai.api_key = os.getenv('OPENAI_API_KEY')
 
-response = openai.Completion.create(
-  engine="text-davinci-003",
-  prompt="What dinosaurs lived in the cretaceous period?",
-  max_tokens=10
-)
+# response = openai.Completion.create(
+#   engine="text-davinci-003",
+#   prompt="What dinosaurs lived in the cretaceous period?",
+#   max_tokens=10
+# )
 
-print(response.choices[0].text.strip())
+# print(response.choices[0].text.strip())
 
 
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 
-response = requests.get('https://opentdb.com/api.php?amount=10')
+# response = requests.get('https://opentdb.com/api.php?amount=10')
 
-print(response.status_code)
+# print(response.status_code)
 # print(getPlaylist('3gW3MRRNkjlnbrwC8LVE9H'))
 
 def getPlaylist (playlistId): 
@@ -122,7 +122,16 @@ def getValuesFromSongs(json_songs):
 
     return songs
 
-# token = get_token()
+def create_recommended(playlist_id):
+    token = get_token()
+    map = get_playlist(token, playlist_id)
+    genres = get_genres_from_artists(token, get_artists_from_playlist(map))
+    artists = get_artists_from_playlist(map)
+    songs = recommend_songs(token, genres, artists, 10)  
+    return songs
+
+
+# token = get_token()   
 # map = get_playlist(token, "3gW3MRRNkjlnbrwC8LVE9H")
 # genres = get_genres_from_artists(token, get_artists_from_playlist(map))
 # artists = get_artists_from_playlist(map)
@@ -132,3 +141,4 @@ def getValuesFromSongs(json_songs):
 # songs = recommend_songs(token, genres, artists, 10)
 # # print(songs)
 # print(getValuesFromSongs(songs))
+print(create_recommended("3gW3MRRNkjlnbrwC8LVE9H"))
