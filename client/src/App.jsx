@@ -1,4 +1,9 @@
-import React,{ useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+
+import Form from './Components/Form';
+import Playlist from './Components/Playlist';
+
+
 
 function App() {
   const [data, setData] = useState([{}]);
@@ -16,9 +21,12 @@ function App() {
   }, [])
     
   return (
-    <h1>
-      {data.message}
-    </h1>
+
+  <div className='main-page'>
+    <h1> SoundSavvy</h1>
+    <Form />
+    <Playlist />
+  </div>
   )
 }
 

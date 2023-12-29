@@ -23,6 +23,10 @@ def hello_world():
 
 @app.route('/playlist_id', methods=['GET'])
 def get_playlist_id(): 
+    @after_this_request
+    def add_header(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     id = request.args.get('id')
     token = get_token()
     # return get_playlist(token, id)
@@ -95,6 +99,7 @@ def get_artists_from_playlist(json_playlist):
 def recommend_songs(token, genres:dict, artists:list[str], num_songs: int):
     url = "https://api.spotify.com/v1/recommendations"
     headers = get_auth_header(token)
+    response.headers.add('Access-Control-Allow-Origin', '*')
     params = {
         "limit": num_songs,
         "seed_artists": artists,
@@ -115,7 +120,7 @@ def getValuesFromSongs(tracks):
         songs.append(track)
         track = {}
 
-    return songs
+    return json.dumps(songs)
 
 def create_recommended(playlist_id):
     token = get_token()
